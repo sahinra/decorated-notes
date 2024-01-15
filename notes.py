@@ -90,10 +90,45 @@ def add_note():
     print_ui_message("Note saved.")
 
 
+def edit_note():
+    list_notes()
+    notes = read_notes()
+    if not notes:
+        print("No notes available")
+        return
+    try:
+        index = int(input("Enter the index of the note you want to edit"))
+        if index in range(len(notes)):
+            edited_note = input("Edit your note")
+            notes[index] = f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%Sf')} {edited_note}"
+            with open(NOTE_FILE, "w") as note_file:
+                note_file.writelines(notes)
+            print("Note edited")
+    except ValueError:
+        print("Invalid input")
+
+
+def delete_note():
+    list_notes()
+    notes = read_notes()
+    if not notes:
+        print("No notes available")
+        return
+    try:
+        index = int(input("Enter the index of the note you want to delete"))
+        if index in range(len(notes)):
+            del notes[index]
+            with open(NOTE_FILE, "w") as note_file:
+                note_file.writelines(notes)
+            print("Note deleted")
+    except ValueError:
+        print("Invalid input")
+
+
 def app():
     keep_going = True
     print_ui_message("Welcome to Decorated Notes!\nUser input is case-insensitive.")
-    menu_elements = {"1": "Add new note", "2": "List saved notes", "Q": "Quit"}
+    menu_elements = {"1": "Add new note", "2": "List saved notes", "3": "Edit a note", "4": "Delete a note", "Q": "Quit"}
     while keep_going:
         print_menu(menu_elements)
         user_input = let_user_select_menu("What would you like to do now? ", menu_elements)
@@ -101,6 +136,10 @@ def app():
             add_note()
         elif user_input == "2":
             list_notes()
+        elif user_input == "3":
+            edit_note()
+        elif user_input == "4":
+            delete_note()
         elif user_input == "Q":
             keep_going = False
     print_ui_message("Bye!")
