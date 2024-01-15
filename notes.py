@@ -1,4 +1,5 @@
 import datetime
+import time
 
 NOTE_FILE = "notes.txt"
 
@@ -18,7 +19,8 @@ def let_user_select_menu(message, menu_elements):
     while not is_input_valid:
         user_input = input(message).upper()
         if user_input not in valid_input:
-            print_ui_message(f"Invalid input: {user_input}. Please choose one of the following: {', '.join(valid_input)}")
+            print_ui_message(
+                f"Invalid input: {user_input}. Please choose one of the following: {', '.join(valid_input)}")
         else:
             is_input_valid = True
     return user_input
@@ -35,12 +37,50 @@ def read_notes():
         return []
 
 
+# Write a decorator function to measure the execution time of a function.
+def exec_time(func):
+    def wrapper():
+        start = time.time()
+        func()
+        end = time.time()
+        print(f"{func.__name__} took {end - start}ms")
+
+    return wrapper
+
+
+# Write a decorator to add logging functionality to a function.
+def log_function(func):
+    def wrapper(*args, **kwargs):
+        timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        print(f"{func.__name__} called at {timestamp} with {args} {kwargs}")
+        res = func(*args, **kwargs)
+        print(f"{func.__name__} completed at {timestamp}")
+        return res
+
+    return wrapper
+
+
+def handle_exception(func):
+    def wrapper(*args, **kwargs):
+        try:
+            res = func(*args, **kwargs)
+            return res
+        except Exception as ex:
+            return "Exception caught"
+
+    return wrapper
+
+
+@log_function
+@exec_time
 def list_notes():
     print_ui_message("Retrieving notes for you.")
     notes = read_notes()
     print("".join(notes), "\n")
 
 
+@log_function
+@exec_time
 def add_note():
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     message = input("Please type your note and hit Enter: ")
